@@ -766,7 +766,10 @@ bool MainWindow::saveConfig(const QString& cfgfile)
     }
     if (QFile::copy(oldfile, newfile))
     {
-        loadConfig(cfgfile, false, false);
+        m_settings->setValue("crashed", false);
+        delete m_settings;
+        m_settings = new QSettings(newfile, QSettings::IniFormat);
+        emit m_recent_config->configSaved(newfile);
         return true;
     }
     else
@@ -786,6 +789,7 @@ void MainWindow::storeSession()
 {
     if (m_settings)
     {
+        m_settings->setValue("configversion", 4);
         m_settings->setValue("input/frequency", ui->freqCtrl->getFrequency());
         m_settings->setValue("fft/fft_center", ui->plotter->getFftCenterFreq());
 
